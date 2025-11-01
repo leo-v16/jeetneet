@@ -13,7 +13,7 @@ export async function PUT(request: Request, context: { params: Promise<{ yearId:
   const data = await request.json();
   const year = await prisma.examYear.update({
     where: { id: parsedYearId },
-    data,
+    data: { ...data, pdfUrl: data.pdfUrl || null },
   });
   return NextResponse.json(year);
 }

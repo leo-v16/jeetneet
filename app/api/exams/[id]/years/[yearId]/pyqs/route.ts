@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/db/prisma';
+import fs from 'fs/promises';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function GET(request: Request, context: { params: Promise<{ id: string, yearId: string }> }) {
   const { id, yearId } = await context.params;

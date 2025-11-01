@@ -63,7 +63,8 @@ model ExamYear {
 
 
 
-  pdfUrl String? // Optional field for PDF URL
+  pdfUrl      String? // Optional field for PDF URL
+  pdfFilePath String? // Optional field for PDF file path
 
 
 
