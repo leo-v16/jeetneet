@@ -14,9 +14,107 @@ datasource db {
 }
 
 model Exam {
-  id          Int    @id @default(autoincrement())
-  name        String @unique
+
+  id          Int          @id @default(autoincrement())
+
+  name        String       @unique
+
   description String
+
   popularity  Int
+
+  options     ExamOption[]
+
+  years       ExamYear[]
+
+  pyqs        PYQ[]
+
 }
+
+
+
+model ExamOption {
+
+  id          Int    @id @default(autoincrement())
+
+  name        String
+
+  description String
+
+  href        String
+
+  exam        Exam   @relation(fields: [examId], references: [id])
+
+  examId      Int
+
+}
+
+
+
+model ExamYear {
+
+
+
+  id     Int    @id @default(autoincrement())
+
+
+
+  year   Int
+
+
+
+  pdfUrl String? // Optional field for PDF URL
+
+
+
+  exam   Exam   @relation(fields: [examId], references: [id])
+
+
+
+  examId Int
+
+
+
+  pyqs   PYQ[]
+
+
+
+
+
+
+
+  @@unique([examId, year])
+
+
+
+}
+
+
+
+
+
+
+
+model PYQ {
+
+  id       Int    @id @default(autoincrement())
+
+  question String
+
+  answer   String
+
+  exam     Exam   @relation(fields: [examId], references: [id])
+
+  examId   Int
+
+  year     ExamYear @relation(fields: [yearId], references: [id])
+
+  yearId   Int
+
+}
+
+
+
+
+
 
