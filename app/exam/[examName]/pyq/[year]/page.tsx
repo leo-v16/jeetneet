@@ -38,28 +38,28 @@ export default async function QuestionPaperPage({
         </h2>
 
         {examYear.pdfFilePath && (
-          <div className="mb-8">
+          <div className="mb-8 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-4">Question Paper</h3>
-            <div className="aspect-w-16 aspect-h-9">
-              <iframe src={examYear.pdfFilePath} className="w-full h-full border rounded-lg shadow-lg"></iframe>
+            <div className="aspect-w-16 aspect-h-9 w-full h-screen">
+              <iframe src={examYear.pdfFilePath} title={`${decodedExamName} ${year} Question Paper`} className="w-full h-full border rounded-lg shadow-lg"></iframe>
             </div>
           </div>
         )}
 
-        <div className="space-y-8">
-          {pyqs.length === 0 ? (
-            <p className="text-center text-gray-600 dark:text-gray-300">No PYQs found for this year.</p>
-          ) : (
-            pyqs.map((pyq, index) => (
+        {(pyqs.length === 0 && !examYear.pdfFilePath) ? (
+          <p className="text-center text-gray-600 dark:text-gray-300">No PYQs or Question Paper found for this year.</p>
+        ) : (
+          <div className="space-y-8">
+            {pyqs.map((pyq, index) => (
               <div key={pyq.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                 <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Question {index + 1}</h3>
                 <p className="text-gray-700 dark:text-gray-300 mb-4">{pyq.question}</p>
                 <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Answer:</h4>
                 <p className="text-gray-700 dark:text-gray-300">{pyq.answer}</p>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
