@@ -1,12 +1,30 @@
 import React from 'react';
-import { BeakerIcon, BookOpenIcon, GlobeAltIcon, AcademicCapIcon, PencilIcon } from '@heroicons/react/24/solid';
 
-const exams = [
-  { name: 'JEE Main', description: 'Joint Entrance Examination for Engineering', icon: <PencilIcon className="h-8 w-8 text-white" /> },
-  { name: 'NEET UG', description: 'National Eligibility cum Entrance Test for Medical', icon: <BeakerIcon className="h-8 w-8 text-white" /> },
-  { name: 'CBSE', description: 'Central Board of Secondary Education', icon: <BookOpenIcon className="h-8 w-8 text-white" /> },
-  { name: 'ICSE', description: 'Indian Certificate of Secondary Education', icon: <GlobeAltIcon className="h-8 w-8 text-white" /> },
-  { name: 'CUET', description: 'Common University Entrance Test', icon: <AcademicCapIcon className="h-8 w-8 text-white" /> },
+type Exam = {
+  name: string,
+  description: string,
+  popularity: number
+}
+
+function ExamCard({ name: examName, description: examDescription }: Pick<Exam, 'name' | 'description'>) {
+  return (
+    <div className="transform hover:scale-105 transition-transform duration-300 bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+      <div className="p-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-3xl text-center font-bold">
+        {examName}
+      </div>
+      <div className="p-6 text-center">
+        <p className="text-gray-600 dark:text-gray-300 mt-2">{examDescription}</p>
+      </div>
+    </div>
+  )
+}
+
+const exams: Exam[] = [
+  { name: 'JEE Main', description: 'Joint Entrance Examination for Engineering', popularity: 0 },
+  { name: 'NEET UG', description: 'National Eligibility cum Entrance Test for Medical', popularity: 0 },
+  { name: 'CBSE', description: 'Central Board of Secondary Education', popularity: 0 },
+  { name: 'ICSE', description: 'Indian Certificate of Secondary Education', popularity: 0 },
+  { name: 'CUET', description: 'Common University Entrance Test', popularity: 0 },
 ];
 
 export default function Home() {
@@ -32,17 +50,7 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {exams.map((exam) => (
-            <div key={exam.name} className="transform hover:scale-105 transition-transform duration-300 bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-              <div className="p-6 bg-gradient-to-r from-blue-500 to-indigo-600">
-                <div className="flex justify-center items-center h-16 w-16 rounded-full bg-white bg-opacity-20 mx-auto">
-                  {exam.icon}
-                </div>
-              </div>
-              <div className="p-6 text-center">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{exam.name}</h2>
-                <p className="text-gray-600 dark:text-gray-300 mt-2">{exam.description}</p>
-              </div>
-            </div>
+            <ExamCard key={exam.name} name={exam.name} description={exam.description} />
           ))}
         </div>
       </main>
