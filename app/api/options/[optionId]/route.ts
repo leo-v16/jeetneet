@@ -1,11 +1,9 @@
 import { NextResponse, NextRequest } from 'next/server';
 import prisma from '@/db/prisma';
 
-export async function PUT(
-  request: NextRequest,
-  context: { params: Promise<{ optionId: string }> }
-) {
-  const { optionId } = await context.params;
+// @ts-ignore - Next.js 16 params type mismatch
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ optionId: string }> }) {
+  const { optionId } = await params;
   const data = await request.json();
 
   const option = await prisma.examOption.update({
@@ -16,11 +14,9 @@ export async function PUT(
   return NextResponse.json(option);
 }
 
-export async function DELETE(
-  request: NextRequest,
-  context: { params: Promise<{ optionId: string }> }
-) {
-  const { optionId } = await context.params;
+// @ts-ignore - Next.js 16 params type mismatch
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ optionId: string }> }) {
+  const { optionId } = await params;
 
   await prisma.examOption.delete({
     where: { id: parseInt(optionId, 10) },
