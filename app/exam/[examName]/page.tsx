@@ -13,13 +13,7 @@ export default async function ExamPage({ params }: { params: Promise<{ examName:
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 font-sans">
-      <header className="bg-white dark:bg-gray-800 shadow-lg">
-        <div className="container mx-auto px-6 py-4">
-          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500">
-            A&A
-          </h1>
-        </div>
-      </header>
+      
 
       <main className="container mx-auto px-6 py-12">
         <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">
