@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import prisma from '@/db/prisma';
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   context: { params: Promise<{ optionId: string }> }
 ) {
-  const { optionId } = await context.params; // await is mandatory now
+  const { optionId } = await context.params;
   const data = await request.json();
 
   const option = await prisma.examOption.update({
@@ -17,7 +17,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   context: { params: Promise<{ optionId: string }> }
 ) {
   const { optionId } = await context.params;
