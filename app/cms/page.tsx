@@ -1,6 +1,7 @@
 "use client"
 import { NextPage } from 'next';
 import { useState, FormEvent } from 'react';
+import ExamCms from '@/components/ExamCms';
 
 const CmsPage: NextPage = () => {
   const [username, setUsername] = useState('');
@@ -39,12 +40,7 @@ const CmsPage: NextPage = () => {
   };
 
   if (isAuthenticated) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <h1 className="text-2xl font-bold">Welcome to the CMS!</h1>
-        {/* Your CMS content goes here */}
-      </div>
-    );
+    return <ExamCms />;
   }
 
   return (
