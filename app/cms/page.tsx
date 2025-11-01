@@ -1,36 +1,95 @@
+"use client"
+import { NextPage } from 'next';
+import { useState, FormEvent } from 'react';
 
-import { headers } from 'next/headers';
+const CmsPage: NextPage = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [error, setError] = useState('');
 
-export default function CmsPage() {
-  const headersList = headers();
-  const authorization = headersList.get('authorization');
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setError('');
 
-  if (authorization) {
-    const [scheme, encoded] = authorization.split(' ');
-    if (scheme === 'Basic' && encoded) {
-      const decoded = Buffer.from(encoded, 'base64').toString();
-      const [username, password] = decoded.split(':');
-
-      if (
-        username === process.env.CMS_USERNAME &&
-        password === process.env.CMS_PASSWORD
-      ) {
-        return (
-          <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            <div className="container mx-auto p-8">
-              <h1 className="text-4xl font-bold mb-8">Content Management System</h1>
-              <p>Welcome, {username}! You can manage your content here.</p>
-            </div>
-          </div>
-        );
-      }
+    if (!username || !password) {
+      setError('Please enter both username and password.');
+      return;
     }
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setIsAuthenticated(true);
+      } else {
+        setError(data.message || 'Authentication failed.');
+      }
+    } catch (err) {
+      setError('An error occurred during authentication.');
+    }
+  };
+
+  if (isAuthenticated) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <h1 className="text-2xl font-bold">Welcome to the CMS!</h1>
+        {/* Your CMS content goes here */}
+      </div>
+    );
   }
 
-  return new Response('Unauthorized', {
-    status: 401,
-    headers: {
-      'WWW-Authenticate': 'Basic realm="Secure Area"',
-    },
-  });
-}
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="w-full max-w-xs">
+        <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+              Username
+            </label>
+            <input
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="username"
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+              Password
+            </label>
+            <input
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              id="password"
+              type="password"
+              placeholder="******************"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {error && <p className="text-red-500 text-xs italic">{error}</p>}
+          </div>
+          <div className="flex items-center justify-between">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="submit"
+            >
+              Sign In
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default CmsPage;
