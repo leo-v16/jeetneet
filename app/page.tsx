@@ -1,5 +1,6 @@
 "use client"
 
+import Link from 'next/link';
 import { useState } from 'react';
 import Fuse from 'fuse.js';
 
@@ -46,7 +47,7 @@ const fuse = new Fuse(exams, {
 export default function Home() {
   const [query, setQuery] = useState('');
 
-  const searchResults = query ? fuse.search(query).map(result => result.item) : exams;
+  const searchResults = query ? fuse.search(query).map(result => result.item) : exams.sort((a, b) => b.popularity - a.popularity);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 font-sans">
@@ -57,11 +58,11 @@ export default function Home() {
       </header>
       <main className="container mx-auto px-6 py-12">
         <div className="sticky top-0 z-10 mb-12">
-          <div className="relative">
+          <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-md border-b-4 border-blue-500 dark:border-indigo-600">
             <input
               type="text"
               placeholder="Search for exams..."
-              className="w-full px-6 py-4 text-lg text-gray-700 bg-white dark:bg-gray-700 dark:text-gray-200 border-2 border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-500 transition-shadow duration-300 shadow-md"
+              className="w-full px-6 py-4 text-lg text-gray-700 bg-transparent dark:text-gray-200 focus:outline-none"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -72,7 +73,9 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {searchResults.map((exam) => (
-            <ExamCard key={exam.name} name={exam.name} description={exam.description} />
+            <Link key={exam.name} href={`/exam/${encodeURIComponent(exam.name)}`}>
+              <ExamCard name={exam.name} description={exam.description} />
+            </Link>
           ))}
         </div>
       </main>
