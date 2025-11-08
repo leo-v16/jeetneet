@@ -17,7 +17,7 @@ type ExamOption = {
 type ExamYear = {
   id: number;
   year: number;
-  pdfFilePath?: string | null;
+  pdfUrl?: string | null;
 };
 
 type PYQ = {
@@ -43,7 +43,7 @@ export default function ExamCms() {
   // Years
   const [years, setYears] = useState<ExamYear[]>([]);
   const [yearValue, setYearValue] = useState(0);
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [editingYear, setEditingYear] = useState<ExamYear | null>(null);
 
   // --- Exam CRUD ---
@@ -136,12 +136,14 @@ export default function ExamCms() {
   const handleYearSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    console.log('pdfUrl:', pdfUrl);
+
     if (editingYear) {
       // Update existing year
-      if (pdfFile) {
+      if (pdfUrl) {
         // Upload new PDF for existing year
         const formData = new FormData();
-        formData.append('pdfFile', pdfFile);
+        formData.append('pdfUrl', pdfUrl);
         const res = await fetch(`/api/exams/${editingExam!.id}/years/${editingYear.id}/upload-pdf`, {
           method: 'POST',
           body: formData,
@@ -162,7 +164,7 @@ export default function ExamCms() {
       setEditingYear(null);
     } else {
       // Create new year
-      const data = { year: yearValue };
+      const data = { year: yearValue, pdfUrl: pdfUrl || null };
       const res = await fetch(`/api/exams/${editingExam!.id}/years`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -170,28 +172,16 @@ export default function ExamCms() {
       });
       const newYear = await res.json();
       setYears([...years, newYear]);
-
-      if (pdfFile) {
-        // Upload PDF for newly created year
-        const formData = new FormData();
-        formData.append('pdfFile', pdfFile);
-        const uploadRes = await fetch(`/api/exams/${editingExam!.id}/years/${newYear.id}/upload-pdf`, {
-          method: 'POST',
-          body: formData,
-        });
-        const updatedYearWithPdf = await uploadRes.json();
-        setYears(years.map(y => (y.id === updatedYearWithPdf.id ? updatedYearWithPdf : y)));
-      }
     }
 
     setYearValue(0);
-    setPdfFile(null);
+    setPdfUrl(null);
   };
 
   const handleYearEdit = (y: ExamYear) => {
     setEditingYear(y);
     setYearValue(y.year);
-    setPdfFile(null); // Clear file input when editing
+    setPdfUrl(null); // Clear file input when editing
   };
 
   const handleYearDelete = async (id: number) => {
@@ -212,7 +202,7 @@ export default function ExamCms() {
       <form onSubmit={handleSubmit} className="mb-8">
         <input type="text" placeholder="Exam Name" value={name} onChange={e => setName(e.target.value)} className="border p-2 w-full mb-2" required />
         <textarea placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} className="border p-2 w-full mb-2" required />
-        <input type="number" placeholder="Popularity" value={popularity} onChange={e => setPopularity(parseInt(e.target.value, 10))} className="border p-2 w-full mb-2" required />
+        <input type="number" placeholder="Popularity" value={popularity || ''} onChange={e => setPopularity(parseInt(e.target.value, 10) || 0)} className="border p-2 w-full mb-2" required />
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">{editingExam ? 'Update Exam' : 'Add Exam'}</button>
       </form>
 
@@ -256,15 +246,15 @@ export default function ExamCms() {
                 <div className="mt-6 border-t pt-4">
                   <h4 className="font-bold mb-2">Years</h4>
                   <form onSubmit={handleYearSubmit}>
-                    <input type="number" placeholder="Year" value={yearValue} onChange={e => setYearValue(parseInt(e.target.value, 10))} className="border p-2 w-full mb-2" />
-                    <input type="file" accept=".pdf" onChange={e => setPdfFile(e.target.files ? e.target.files[0] : null)} className="border p-2 w-full mb-2" />
+                    <input type="number" placeholder="Year" value={yearValue || ''} onChange={e => setYearValue(parseInt(e.target.value, 10) || 0)} className="border p-2 w-full mb-2" />
+                    <input type="text" placeholder="PDF URL" value={pdfUrl || ''} onChange={e => setPdfUrl(e.target.value)} className="border p-2 w-full mb-2" />
                     <button className="bg-green-500 text-white px-4 py-1 rounded">{editingYear ? 'Update Year' : 'Add Year'}</button>
                   </form>
                   <ul>
                     {years.map(y => (
                       <li key={y.id} className="mt-2 border p-2 rounded">
                         <p>{y.year}</p>
-                        {y.pdfFilePath && <a href={y.pdfFilePath} target="_blank" className="text-blue-500">View PDF</a>}
+                        {y.pdfUrl && <a href={y.pdfUrl} target="_blank" className="text-blue-500">View PDF</a>}
                         <button onClick={() => handleYearEdit(y)} className="bg-yellow-500 text-white px-2 py-1 rounded mr-2">Edit</button>
                         <button onClick={() => handleYearDelete(y.id)} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
                       </li>
